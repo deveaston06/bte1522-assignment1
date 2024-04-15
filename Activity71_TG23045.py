@@ -168,6 +168,44 @@ def timer():
     else:
         return False # If less than or equal to 30 
 
+# Step 8-1: Initialize Speed Power Up
+spd_last_reset_time = time.time() - 4
+spd_is_reset = True
+spd_is_picked_up = False
+spd_width = 30
+spd_height = 30
+spd_color = (255, 0, 255)
+y_spd = 0
+x_spd = random.randint(0, width - spd_width)
+
+def update_speed_powerup():
+    global speed_power_up, x_spd, y_spd, spd_width, spd_height, spd_is_reset, spd_last_reset_time, spd_is_picked_up, play_speed
+    
+    speed_power_up = pygame.Rect(x_spd, y_spd, spd_width, spd_height)
+    
+    if not spd_is_reset: # if speed power up is NOT reset
+        if y_spd > height: # if power up y position is more than screen height
+            spd_is_reset = True # set TRUE to speed power up is reset
+            spd_last_reset_time = time.time() # set last time speed power up reset to Now
+        else: # else move the power up downwards and draw the power up
+            y_spd += 5  
+            pygame.draw.ellipse(screen, spd_color, speed_power_up)
+    
+    if player.colliderect(speed_power_up) and not spd_is_reset: # if speed power up is NOT reset and player picked up speed power up
+        play_speed = 30 # set the player speed to 30 pixels
+        spd_is_reset = True # set TRUE to speed power up is reset
+        spd_last_reset_time = time.time() # set last time speed power up reset to Now
+        spd_is_picked_up = True
+        
+    if time.time() > spd_last_reset_time + 10 and spd_is_reset: # if speed power up is reset and elapsed more than 10 seconds since last time reset power up
+        spd_is_reset = False # set FALSE to speed power up is reset
+        y_spd = 0 # Reset the y-coordinate to the top of the screen
+        x_spd = random.randint(0, width - spd_width) # Appear at random x-coordinate
+        
+    if time.time() > spd_last_reset_time + 5 and spd_is_picked_up: # if speed power up is picked up and elapsed more than 5 seconds since last time reset power up
+        spd_is_picked_up = False # set FALSE to speed power up is picked up
+        play_speed = 15 # reset the player speed back to 15 pixels
+        
 # Step 1-5: Starting the game loop
 # Step 6-6: Starting the game over loop
 while not game_over:
@@ -185,6 +223,9 @@ while not game_over:
     
     # Step 6-7: Call the Time Function
     game_over = timer() # Call the 'timer()'
+    
+    # Step 8-2: Call the Update Extra Time Power Up Function
+    update_speed_powerup()
     
     pygame.time.delay(50) # Add a small delay to control the speed of the game.
     
