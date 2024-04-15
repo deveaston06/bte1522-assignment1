@@ -206,6 +206,44 @@ def update_speed_powerup():
         spd_is_picked_up = False # set FALSE to speed power up is picked up
         play_speed = 15 # reset the player speed back to 15 pixels
         
+# Step 8-3: Initialize Expand Power Up
+exp_last_reset_time = time.time()
+exp_is_reset = True
+exp_is_picked_up = False
+exp_width = 30
+exp_height = 30
+exp_color = (0, 255, 255)
+y_exp = 0
+x_exp = random.randint(0, width - exp_width)
+
+def update_expand_powerup():
+    global expand_power_up, x_exp, y_exp, exp_width, exp_height, exp_is_reset, exp_last_reset_time, exp_is_picked_up, play_width
+    
+    expand_power_up = pygame.Rect(x_exp, y_exp, exp_width, exp_height)
+    
+    if not exp_is_reset: # if expand power up is NOT reset
+        if y_exp > height: # if power up y position is more than screen height
+            exp_is_reset = True # set TRUE to expand power up is reset
+            exp_last_reset_time = time.time() # set expand power up last reset time  to Now
+        else: # else move the power up downwards and draw the power up
+            y_exp += 5
+            pygame.draw.ellipse(screen, exp_color, expand_power_up)
+    
+    if player.colliderect(expand_power_up) and not exp_is_reset: # if expand power up is NOT reset and player picked up expand power up
+        play_width = 60 # set the player width to 60 pixels
+        exp_is_reset = True # set TRUE to expand power up is reset
+        exp_last_reset_time = time.time() # set expand power up last reset time to Now
+        exp_is_picked_up = True
+        
+    if time.time() > exp_last_reset_time + 10 and exp_is_reset: # if expand power up is reset and elapsed more than 10 seconds since power up last reset time 
+        exp_is_reset = False # set FALSE to expand power up is reset
+        y_exp = 0 # Reset the y-coordinate to the top of the screen
+        x_exp = random.randint(0, width - exp_width) # Appear at random x-coordinate
+    
+    if time.time() > exp_last_reset_time + 5 and exp_is_picked_up: # if expand power up is picked up and elapsed more than 5 seconds since power up last reset time 
+        exp_is_picked_up = False # set FALSE to expand power up is picked up
+        play_width = 30 # reset the player width back to 30 pixels
+        
 # Step 1-5: Starting the game loop
 # Step 6-6: Starting the game over loop
 while not game_over:
@@ -226,6 +264,9 @@ while not game_over:
     
     # Step 8-2: Call the Update Extra Time Power Up Function
     update_speed_powerup()
+    
+    # Step 8-4: Call the Update Expand Power Up Function
+    update_expand_powerup()
     
     pygame.time.delay(50) # Add a small delay to control the speed of the game.
     
