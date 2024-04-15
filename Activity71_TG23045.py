@@ -25,10 +25,11 @@ play_height = 30 # size of the player square
 global x, y # Global variables to store the player's position
 x = width / 2 # Starting position at the center horizontally
 y = height - 2 * play_height # Starting position near the bottom of the screen
+play_speed = 15
 
 # Step 2-2: Define a function called 'drawplayer()' to draw the player
 def drawplayer():
-    global player, x, y
+    global player, x, y, play_speed
     
     # Create a Rectangle representating the player character using  the 'pygame.Rect()' function
     # The rectange is positioned at coordinates (x, y) with a width and height of 'play_size'
@@ -38,9 +39,9 @@ def drawplayer():
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                x -= 30 # Move the player 5 pixel to the left
+                x -= play_speed # Move the player 5 pixel to the left
             elif event.key == pygame.K_RIGHT:
-                x += 30 # Move the player 5 pixel to the right
+                x += play_speed # Move the player 5 pixel to the right
                 
     # Step 3-2 Limit Player Movement within the screen boundaries
     # Ensure the player does not go outside the left edge of the screen
@@ -149,7 +150,7 @@ def timer():
     
     # Step 6-4: Display Time on the Screen
     # Create a text label showing the elapsed time
-    text = "Time: " + str(30 - int(total_time))
+    text = "Time: " + str(60 - int(total_time))
     
     # Choose a font and size for the time label
     myFont = pygame.font.SysFont("monospace", 25)
@@ -162,7 +163,7 @@ def timer():
     screen.blit(time_label, (width / 2, 0))
     
     # Step 6-5: Check for Game Over Condition
-    if total_time > 30:
+    if total_time > 60:
         return True # If more than 30 seconds have passed, return True (game over)
     else:
         return False # If less than or equal to 30 
